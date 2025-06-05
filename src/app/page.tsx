@@ -1,5 +1,7 @@
 import styles from "./page.module.css";
 import Grid from "@/components/Grid";
+import {PathProvider} from "@/components/Path";
+import {ModalProvider} from "@/components/Modal";
 
 export default function Home() {
     return (
@@ -10,7 +12,11 @@ export default function Home() {
                 </h1>
             </header>
             <main className={styles.main}>
-                <Grid />
+                <PathProvider>
+                    <ModalProvider>
+                        <Grid/>
+                    </ModalProvider>
+                </PathProvider>
             </main>
             <footer className={styles.footer}>
                 Demonstração feita por Fernando Piancastelli

@@ -1,7 +1,9 @@
 'use client'
-import React, {useState} from "react";
-import {Flex} from 'antd';
+import React, {useContext, useEffect, useState} from "react";
+import {Breadcrumb, Button, Divider, Flex} from 'antd';
 import {CardData, GenericCard} from "@/components/GenericCard";
+import {PathContext} from "@/components/Path";
+import {ModalContext} from "@/components/Modal";
 
 const boxStyle: React.CSSProperties = {
     width: '100%',
@@ -15,10 +17,21 @@ const seedCards: CardData[] = [
 ]
 
 export default function Grid() {
+    const {path} = useContext(PathContext)
+    const { newFolder } = useContext(ModalContext);
     const [cards] = useState<CardData[]>(seedCards);
-    return <Flex gap="middle" align="start" vertical>
-        <Flex style={boxStyle} justify={'flex-start'} align={'flex-start'}>
-            {cards.map(c => <GenericCard key={c.id} title={c.title} meta={c.meta}/>)}
+
+    return <>
+        <Breadcrumb items={path}/>
+        <Divider/>
+        <Flex gap="middle" align="start" vertical style={boxStyle} >
+            <Flex>
+                <Button onClick={newFolder}>Nova Pasta</Button>&nbsp;
+                <Button>Novo Arquivo</Button>
+            </Flex>
+            <Flex justify={'flex-start'} align={'flex-start'}>
+                {cards.map(c => <GenericCard key={c.id} title={c.title} meta={c.meta}/>)}
+            </Flex>
         </Flex>
-    </Flex>
+    </>
 }
