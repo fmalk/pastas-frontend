@@ -14,10 +14,11 @@ Projeto será colocado no ar pela Vercel.
 
 - Código usando expressões em inglês, e português onde for mostrado ao Usuário.
 - Ant.D foi escolhido para facilitar criação de componentes de UI.
+- Não foi utilizado Saga* para manutenção de estado em React, apenas Context/Providers e boa separação de responsabilidades.
 - Escrito pensando no deploy do projeto-irmão "Pastas-Backend".
 - Drag n' Drop não foi implementado; ordem pode ser definida pelo Card.
-- Componentes "Mock" podem ser substituídas no lugar das "verdadeiras" para facilitar o teste deste projeto em separado.
-- Arquivos de Componentes acompanham seus tipos companheiros.
+- "Metadata" é o único lugar em que o backend precisa ser plugado.
+- Arquivos de Componentes acompanham seus tipos.
 - Nomes de pastas são sempre ordenados primeiro; arquivos são exibidos por ordem de criação e podem ter ordem modificada por numeração.
 - Manter o arquivo de metadados íntegro é vital para aplicação. Existem técnicas mais elaboradas para garantir isso, como o uso de versões incrementais (deltas).
 
@@ -31,5 +32,5 @@ Projeto será colocado no ar pela Vercel.
     - Geral: exibe nome, e clique leva a modal de metadados e edição
     - Pasta
     - Arquivo
-- Metadados: é mantido um objeto "universal" com todos os metadados de todas as pastas, em JSON, feito para ser mantido pelo backend.
+- Metadados: é mantido um objeto "universal" com todos os metadados de todas as pastas, em array genérico (JSONable), feito para ser mantido pelo backend.
 - Arquivos: serão guardados por ID e referenciado via metadados.

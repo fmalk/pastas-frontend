@@ -22,22 +22,26 @@ export function ModalProvider({children}: any) {
             id: '',
             parentId: null,
             title,
-            size: 2048,
+            size: 0,
             position: 0,
             type: CardType.FOLDER
         });
         handleCancel();
     }
     function okNewFile() {
-        addItem({
+        const response = addItem({
             id: '',
             parentId: null,
             title,
-            size: 1024,
+            size: Math.round(1024*8*Math.random()),
             position: 0,
             type: CardType.FILE
         });
-        handleCancel();
+        if (!response) {
+            setTitle('nome já existente na pasta');
+        } else {
+            handleCancel();
+        }
     }
 
     function handleCancel() {

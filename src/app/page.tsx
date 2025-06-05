@@ -13,13 +13,13 @@ export default function Home() {
                 </h1>
             </header>
             <main className={styles.main}>
-                <MetaProvider>
-                    <PathProvider>
+                <PathProvider>
+                    <MetaProvider>
                         <ModalProvider>
                             <Grid/>
                         </ModalProvider>
-                    </PathProvider>
-                </MetaProvider>
+                    </MetaProvider>
+                </PathProvider>
             </main>
             <footer className={styles.footer}>
                 Demonstração feita por Fernando Piancastelli
