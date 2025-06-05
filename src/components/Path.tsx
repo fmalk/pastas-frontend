@@ -21,7 +21,7 @@ export function PathProvider({children}: any) {
     }
 
     return (
-        <PathContext.Provider value={{ path: [{ title: 'Raiz', level: 0 }], up, down}}>
+        <PathContext.Provider value={{ path: [{ title: 'Raiz', level: 0, refId: null }], up, down}}>
             {children}
         </PathContext.Provider>
     );
@@ -29,6 +29,7 @@ export function PathProvider({children}: any) {
 
 export type PathData = {
     title: string;
+    refId: string | null;
     level?: number;
 }
 

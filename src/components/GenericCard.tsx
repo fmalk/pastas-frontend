@@ -1,14 +1,50 @@
-import { Card } from 'antd';
+import {Card} from 'antd';
+import {FolderOutlined, ArrowUpOutlined, FileOutlined} from "@ant-design/icons";
+import {useEffect, useState} from "react";
 
-export function GenericCard({ title, meta }: { title: string, meta: string }) {
-    return <Card title={title} variant='borderless' style={{ width: '250px' }}>
-        <p>{meta}</p>
+export function GenericCard({card}: { card: CardData }) {
+    const [icon, setIcon] = useState(<FolderOutlined />)
+    function color(cardType: CardType) {
+        switch (cardType) {
+            case CardType.FILE:
+                return 'lightgrey';
+            case CardType.SYSTEM:
+                return 'lightblue';
+            case CardType.FOLDER:
+                return 'lightyellow';
+        }
+    }
+    useEffect(() => {
+        switch (card.type) {
+            case CardType.SYSTEM:
+                setIcon(<ArrowUpOutlined />);
+                break;
+            case CardType.FOLDER:
+                setIcon(<FolderOutlined />);
+                break;
+            case CardType.FILE:
+                setIcon(<FileOutlined />);
+                break;
+        }
+    }, [card]);
+    return <Card variant='borderless' style={{width: '250px', margin: '0.5em', backgroundColor: color(card.type)}}>
+        <>
+            {icon}&nbsp;<span>{ card.title }</span>
+        </>
     </Card>
 }
 
 export type CardData = {
     id: string;
+    parentId: string | null;
     title: string;
-    meta: string;
     position: number;
+    type: CardType;
+    size?: number; // em bytes
+}
+
+export enum CardType {
+    SYSTEM = 0,
+    FOLDER = 1,
+    FILE = 2,
 }

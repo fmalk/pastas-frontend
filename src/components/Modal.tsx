@@ -2,6 +2,8 @@
 import {createContext, useContext, useState} from "react";
 import {PathContext} from "@/components/Path";
 import {Input, Modal} from "antd";
+import {MetaContext} from "@/components/Metadata";
+import {CardType} from "@/components/GenericCard";
 
 export const ModalContext = createContext<ModalData>({
     newFolder: () => ({}),
@@ -13,16 +15,33 @@ export const ModalContext = createContext<ModalData>({
 export function ModalProvider({children}: any) {
     const [modalNewFolderOpen, setModalNewFolderOpen] = useState(false);
     const [modalNewFileOpen, setModalNewFileOpen] = useState(false);
-    const { down } = useContext(PathContext);
+    const { addItem } = useContext(MetaContext);
     const [title, setTitle] = useState<string>('');
     function okNewFolder() {
-        down({ title })
+        addItem({
+            id: '',
+            parentId: null,
+            title,
+            size: 2048,
+            position: 0,
+            type: CardType.FOLDER
+        });
+        handleCancel();
     }
     function okNewFile() {
-        down({ title })
+        addItem({
+            id: '',
+            parentId: null,
+            title,
+            size: 1024,
+            position: 0,
+            type: CardType.FILE
+        });
+        handleCancel();
     }
 
     function handleCancel() {
+        setTitle('');
         setModalNewFolderOpen(false);
         setModalNewFileOpen(false);
     }
@@ -32,7 +51,7 @@ export function ModalProvider({children}: any) {
     }
 
     function newFile() {
-        setModalNewFolderOpen(true);
+        setModalNewFileOpen(true);
     }
 
     function deleteFolder() {
@@ -54,7 +73,17 @@ export function ModalProvider({children}: any) {
                 onCancel={handleCancel}
             >
                 <p>Nome da pasta:</p>
-                <Input />
+                <Input onChange={e => setTitle(e.target.value)} value={title} />
+            </Modal>
+            <Modal
+                centered
+                title="Criar Novo Arquivo"
+                open={modalNewFileOpen}
+                onOk={okNewFile}
+                onCancel={handleCancel}
+            >
+                <p>Nome do arquivo:</p>
+                <Input onChange={e => setTitle(e.target.value)} value={title} />
             </Modal>
         </ModalContext.Provider>
     );

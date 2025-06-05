@@ -1,9 +1,11 @@
 'use client'
 import React, {useContext, useEffect, useState} from "react";
 import {Breadcrumb, Button, Divider, Flex} from 'antd';
-import {CardData, GenericCard} from "@/components/GenericCard";
+import {CardData, CardType, GenericCard} from "@/components/GenericCard";
 import {PathContext} from "@/components/Path";
 import {ModalContext} from "@/components/Modal";
+import {MetaContext} from "@/components/Metadata";
+import {FileAddOutlined, FolderAddOutlined} from "@ant-design/icons";
 
 const boxStyle: React.CSSProperties = {
     width: '100%',
@@ -12,25 +14,34 @@ const boxStyle: React.CSSProperties = {
     minHeight: '500px'
 };
 
-const seedCards: CardData[] = [
-    {id: 'asdfas', title: 'Primeiro', meta: 'Arquivo 3kb', position: 0}
-]
-
 export default function Grid() {
     const {path} = useContext(PathContext)
-    const { newFolder } = useContext(ModalContext);
-    const [cards] = useState<CardData[]>(seedCards);
+    const {newFolder, newFile} = useContext(ModalContext);
+    const {items, viewItems} = useContext(MetaContext);
+    const [show, setShow] = useState<CardData[]>([]);
+
+    useEffect(() => {
+        setShow(viewItems());
+    }, [items]);
 
     return <>
         <Breadcrumb items={path}/>
         <Divider/>
-        <Flex gap="middle" align="start" vertical style={boxStyle} >
+        <Flex gap="middle" align="start" vertical style={boxStyle}>
             <Flex>
-                <Button onClick={newFolder}>Nova Pasta</Button>&nbsp;
-                <Button>Novo Arquivo</Button>
+                <Button onClick={newFolder}><FolderAddOutlined/>Nova Pasta</Button>&nbsp;
+                <Button onClick={newFile}><FileAddOutlined/>Novo Arquivo</Button>
             </Flex>
             <Flex justify={'flex-start'} align={'flex-start'}>
-                {cards.map(c => <GenericCard key={c.id} title={c.title} meta={c.meta}/>)}
+                {
+                    show.length > 1 ? show.map(c => <GenericCard key={c.id} card={c}/>)
+                        : show.length === 1 && show[0].type === CardType.SYSTEM ? <>
+                                <GenericCard key={show[0].id} card={show[0]}/>
+                                <span>Pasta vazia</span>
+                            </>
+                            : show.length === 1 ? <GenericCard key={show[0].id} card={show[0]}/>
+                                : <span>Pasta vazia</span>
+                }
             </Flex>
         </Flex>
     </>
