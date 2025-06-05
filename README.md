@@ -17,3 +17,17 @@ Projeto será colocado no ar pela Vercel.
 - Escrito pensando no deploy do projeto-irmão "Pastas-Backend"
 - Componentes "Mock" podem ser substituídas no lugar das "verdadeiras" para facilitar o teste deste projeto em separado.
 - Arquivos de Componentes acompanham seus tipos companheiros.
+- Manter o arquivo de metadados íntegro é vital para aplicação. Existem técnicas mais elaboradas para garantir isso, como o uso de versões incrementais (deltas).
+
+## Estrutura
+
+- Layout/Page: ínicio, abriga os componentes Providers para disponibilização de métodos
+- Grid: monta o caminho, botões "Novo X" e o painel de Cards
+  - Path: exibe o caminho atual
+  - Modal: exibe as modais de inputs para criação de novos itens
+  - Cards:
+    - Geral: exibe nome, e clique leva a modal de metadados e edição
+    - Pasta
+    - Arquivo
+- Metadados: é mantido um objeto "universal" com todos os metadados de todas as pastas, em JSON, feito para ser mantido pelo backend.
+- Arquivos: serão guardados por ID e referenciado via metadados.
