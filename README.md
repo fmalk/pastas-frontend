@@ -2,6 +2,13 @@
 
 Demonstração de funcionalidades e técnicas.
 
+## LIMITAÇÕES ATUAIS
+
+- Não está conectado ao backend
+- Pode ordenar arquivos mas não via drag n' drop
+- Nenhum nome repetido, independente do lugar
+- Sem busca até o momento
+
 ## Informações
 
 Projeto feito com [Next.js](https://nextjs.org) e [Ant.Design](https://ant.design/components/overview/).

@@ -8,20 +8,18 @@ export const PathContext = createContext<TreeData>({
 });
 
 export function PathProvider({children}: any) {
-    const [path, setPath] = useState<PathData[]>([{ title: 'Raiz', level: 0, refId: null }]);
+    const [path, setPath] = useState<PathData[]>([{ title: 'Raiz', refId: null }]);
     function up() {
-        const curLevel = path[path.length - 1].level;
-        if (curLevel && curLevel > 0) {
+        const curLevel = path.length - 1;
+        if (curLevel > 0) {
             setPath(prev => {
-                prev.pop();
-                return prev;
+                return prev.slice(0, -1);
             });
         }
     }
     function down(folder: PathData) {
-        const level = path[path.length - 1].level || 0;
         setPath(prev => {
-            prev.push({ ...folder, level: level + 1 });
+            prev.push(folder);
             return prev;
         });
     }
@@ -36,7 +34,6 @@ export function PathProvider({children}: any) {
 export type PathData = {
     title: string;
     refId: string | null;
-    level?: number;
 }
 
 export type TreeData = {

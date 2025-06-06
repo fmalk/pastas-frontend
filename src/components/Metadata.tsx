@@ -41,8 +41,8 @@ export function MetaProvider({children}: any) {
 
     function addItem(item: CardData) {
         const curItems = viewItems();
-        // apenas nome único por pasta
-        const sameName = curItems.find(i => i.title === item.title);
+        // apenas nome único
+        const sameName = items.find(i => i.title === item.title);
         if (sameName) return null;
 
         const nextPosition = curItems.reduce((p,c) => Math.max(p, c.position), 0) + 1;
@@ -56,6 +56,8 @@ export function MetaProvider({children}: any) {
     function changeFolder(selected: CardData) {
         if (selected.type === CardType.SYSTEM) {
             up();
+            const target = items.find(i => i.id === parent)!;
+            setParent(target.parentId);
         } else if (selected.type === CardType.FOLDER) {
             down({
                 refId: selected.id, title: selected.title
