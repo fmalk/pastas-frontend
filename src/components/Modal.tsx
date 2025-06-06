@@ -5,6 +5,7 @@ import {MetaContext} from "@/components/Metadata";
 import {CardData, CardType} from "@/components/GenericCard";
 import {InboxOutlined} from "@ant-design/icons";
 import {RcFile} from "antd/lib/upload";
+import {PutBlobResult} from "@vercel/blob";
 const { Dragger } = Upload;
 
 export const ModalContext = createContext<ModalData>({
@@ -17,10 +18,7 @@ const props: UploadProps = {
     name: 'file',
     multiple: false,
     maxCount: 1,
-    action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-    headers: {
-        authorization: 'authorization-text',
-    },
+    action: '/api/upload',
 };
 
 export function ModalProvider({children}: any) {
@@ -28,9 +26,11 @@ export function ModalProvider({children}: any) {
     const [modalNewFileOpen, setModalNewFileOpen] = useState(false);
     const [modalFileOpen, setModalFileOpen] = useState(false);
     const { addItem, changeOrder, removeItem } = useContext(MetaContext);
+    const [blob, setBlob] = useState<PutBlobResult | null>(null);
     const [ error, setError ] = useState('');
     const [title, setTitle] = useState<string>('');
     const [fileCard, setFileCard] = useState<CardData | null>(null);
+
     function okNewFolder() {
         const response = addItem({
             id: '',

@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@vercel/blob": "^1.1.1",
     "antd": "^5.25.4",
     "nanoid": "^5.1.5",
     "next": "15.3.3",
