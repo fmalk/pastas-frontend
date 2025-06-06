@@ -8,6 +8,7 @@ Demonstração de funcionalidades e técnicas.
 - Pode ordenar arquivos mas não via drag n' drop
 - Nenhum nome repetido, independente do lugar
 - Sem busca até o momento
+- Sem downloads, por não haver backend que os salva
 
 ## Informações
 
@@ -15,7 +16,7 @@ Projeto feito com [Next.js](https://nextjs.org) e [Ant.Design](https://ant.desig
 
 Você pode rodar localmente usando `npm run dev`.
 
-Projeto será colocado no ar pela Vercel.
+**Projeto está no ar em https://pastas-frontend.vercel.app**  
 
 ## Considerações
 

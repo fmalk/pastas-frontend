@@ -79,6 +79,7 @@ export function ModalProvider({children}: any) {
 
     function handleCancel() {
         setTitle('');
+        setError('');
         setModalNewFolderOpen(false);
         setModalNewFileOpen(false);
         setModalFileOpen(false);
@@ -124,7 +125,8 @@ export function ModalProvider({children}: any) {
                 onCancel={handleCancel}
             >
                 <p>Nome da pasta:</p>
-                <Input onChange={e => setTitle(e.target.value)} value={title} />
+                <Input onChange={e => setTitle(e.target.value)} value={title}/>
+                <span>{error}</span>
             </Modal>
             <Modal
                 centered
