@@ -1,12 +1,14 @@
 'use client'
 import {createContext, useContext, useState} from "react";
-import {Input, InputNumber, Modal, Upload, UploadProps} from "antd";
+import {Input, InputNumber, Modal, Upload, UploadProps, Image} from "antd";
 import {MetaContext} from "@/components/Metadata";
 import {CardData, CardType} from "@/components/GenericCard";
 import {InboxOutlined} from "@ant-design/icons";
 import {RcFile} from "antd/lib/upload";
-import {PutBlobResult} from "@vercel/blob";
-const { Dragger } = Upload;
+import {upload} from "@vercel/blob/client";
+import {formatFileSize, formatTimestamp} from "@/components/Utils";
+
+const {Dragger} = Upload;
 
 export const ModalContext = createContext<ModalData>({
     newFolder: () => ({}),
@@ -18,16 +20,14 @@ const props: UploadProps = {
     name: 'file',
     multiple: false,
     maxCount: 1,
-    action: '/api/upload',
 };
 
 export function ModalProvider({children}: any) {
     const [modalNewFolderOpen, setModalNewFolderOpen] = useState(false);
     const [modalNewFileOpen, setModalNewFileOpen] = useState(false);
     const [modalFileOpen, setModalFileOpen] = useState(false);
-    const { addItem, changeOrder, removeItem } = useContext(MetaContext);
-    const [blob, setBlob] = useState<PutBlobResult | null>(null);
-    const [ error, setError ] = useState('');
+    const {addItem, changeOrder, removeItem} = useContext(MetaContext);
+    const [error, setError] = useState('');
     const [title, setTitle] = useState<string>('');
     const [fileCard, setFileCard] = useState<CardData | null>(null);
 
@@ -46,25 +46,16 @@ export function ModalProvider({children}: any) {
             handleCancel();
         }
     }
+
     function okNewFile(info: any) {
 
         if (info.file.status !== 'uploading') {
-            console.log(info.file);
+            //console.log(info);
         }
-        if (info.file.status === 'done' || info.file.status === 'error') {
-           const response = addItem({
-                id: '',
-                parentId: null,
-                title: info ? info.file.name : '',
-                size: info ? info.file.size : 1024,
-                position: 0,
-                type: CardType.FILE
-            });
-            if (!response) {
-                setError('nome já existente na pasta');
-            } else {
-                handleCancel();
-            }
+        if (info.file.status === 'done') {
+
+        } else if (info.file.status === 'error') {
+            setError('erro no upload');
         }
     }
 
@@ -103,19 +94,39 @@ export function ModalProvider({children}: any) {
         setModalFileOpen(true)
     }
 
-    // Esta foi gerada por Cursor IA ("Line 131 show the size in bytes, can you give me a function that would parse this number and show a kB, mB version?")
-    function formatFileSize(bytes: number | undefined): string {
-        if (bytes === 0 || !bytes) return '0 Bytes';
-
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    // deve ser customizado para uso com Vercel Blob
+    async function handleUpload(options: any) {
+        try {
+            const newBlob = await upload(options.file?.name || 'teste', options.file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+            });
+            const response = addItem({
+                id: options.file.uid,
+                parentId: null,
+                title: options.file.name,
+                size: options.file.size || 1024,
+                position: 0,
+                type: CardType.FILE,
+                timestamp: options.file.lastModified,
+                url: newBlob.url,
+                downloadUrl: newBlob.downloadUrl,
+            });
+            if (!response) {
+                setError('nome já existente na pasta');
+            } else {
+                handleCancel();
+            }
+            return true;
+        } catch (err) {
+            console.error(err);
+            setError('erro no upload do arquivo');
+            return false;
+        }
     }
 
     return (
-        <ModalContext.Provider value={{ newFolder, newFile, showFile }}>
+        <ModalContext.Provider value={{newFolder, newFile, showFile}}>
             {children}
             <Modal
                 centered
@@ -136,18 +147,24 @@ export function ModalProvider({children}: any) {
                 onCancel={() => deleteFile(fileCard)}
                 cancelText={'Apagar'}
             >
-                <p>Nome: <strong>{fileCard?.title}</strong></p>
+                <Image width={200} src={fileCard?.url} />
+                <p>
+                    <span>Nome: <strong>{fileCard?.title}</strong></span>&nbsp;
+                    <span>{fileCard?.downloadUrl ? (<a href={fileCard?.downloadUrl} target='_blank'><u>Download</u></a>) : ''}</span>
+                </p>
                 <p>Tamanho: {formatFileSize(fileCard?.size)}</p>
-                <div>Ordem: <InputNumber min={0} defaultValue={fileCard?.position} onChange={(value) => value || value === 0 ? changeOrder(value, fileCard) : false } changeOnWheel /></div>
+                <p>Data/Hora: {formatTimestamp(fileCard?.timestamp || 0)}</p>
+                <div>Ordem: <InputNumber min={0} defaultValue={fileCard?.position}
+                                         onChange={(value) => value || value === 0 ? changeOrder(value, fileCard) : false} changeOnWheel/></div>
             </Modal>
             <Modal
                 centered
                 title="Novo Arquivo"
                 open={modalNewFileOpen}
-                onOk={okNewFile}
+                onOk={handleCancel}
                 onCancel={handleCancel}
             >
-                <Dragger {...props} onChange={okNewFile} beforeUpload={beforeUpload}>
+                <Dragger {...props} onChange={okNewFile} beforeUpload={beforeUpload} customRequest={handleUpload}>
                     <p className="ant-upload-drag-icon">
                         <InboxOutlined/>
                     </p>

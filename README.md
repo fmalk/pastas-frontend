@@ -4,11 +4,12 @@ Demonstração de funcionalidades e técnicas.
 
 ## LIMITAÇÕES ATUAIS
 
-- Não está conectado ao backend
 - Pode ordenar arquivos mas não via drag n' drop
 - Nenhum nome repetido, independente do lugar
 - Sem busca até o momento
-- Sem downloads, por não haver backend que os salva
+- Não apaga pastas, apenas arquivos
+- Sessões não se mantêm, para que Usuários testers diferentes vejam diferentes pastas
+- Bug: barra de progresso pode ficar travada, por pequena incompatibilidade de libs
 
 ## Informações
 
@@ -23,7 +24,7 @@ Você pode rodar localmente usando `npm run dev`.
 - Código usando expressões em inglês, e português onde for mostrado ao Usuário.
 - Ant.D foi escolhido para facilitar criação de componentes de UI.
 - Não foi utilizado Saga* para manutenção de estado em React, apenas Context/Providers e boa separação de responsabilidades.
-- Escrito pensando no deploy do projeto-irmão "Pastas-Backend".
+- Usa Vercel Blobs, não foi necessário backend para armazenamento.
 - Drag n' Drop não foi implementado; ordem pode ser definida pelo Card.
 - "Metadata" é o único lugar em que o backend precisa ser plugado.
 - Arquivos de Componentes acompanham seus tipos.
@@ -35,10 +36,11 @@ Você pode rodar localmente usando `npm run dev`.
 - Layout/Page: ínicio, abriga os componentes Providers para disponibilização de métodos
 - Grid: monta o caminho, botões "Novo X" e o painel de Cards
   - Path: exibe o caminho atual
-  - Modal: exibe as modais de inputs para criação de novos itens
+  - Modal: exibe as modais de inputs para criação de novos itens e exibição de arquivos
   - Cards:
     - Geral: exibe nome, e clique leva a modal de metadados e edição
     - Pasta
     - Arquivo
+  - Api/Upload: conexão com o Vercel Blob para upload
 - Metadados: é mantido um objeto "universal" com todos os metadados de todas as pastas, em array genérico (JSONable), feito para ser mantido pelo backend.
-- Arquivos: serão guardados por ID e referenciado via metadados.
+- Arquivos: serão guardados por ID e referenciado via metadados (url/downloadUrl).

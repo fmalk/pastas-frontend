@@ -1,9 +1,11 @@
 import {Card} from 'antd';
 import {FolderOutlined, ArrowUpOutlined, FileOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
+import {formatFileSize} from "@/components/Utils";
 
 export function GenericCard({card, handleClick}: { card: CardData, handleClick: any }) {
-    const [icon, setIcon] = useState(<FolderOutlined />)
+    const [icon, setIcon] = useState(<FolderOutlined/>)
+
     function color(cardType: CardType) {
         switch (cardType) {
             case CardType.FILE:
@@ -18,19 +20,25 @@ export function GenericCard({card, handleClick}: { card: CardData, handleClick: 
     useEffect(() => {
         switch (card.type) {
             case CardType.SYSTEM:
-                setIcon(<ArrowUpOutlined />);
+                setIcon(<ArrowUpOutlined/>);
                 break;
             case CardType.FOLDER:
-                setIcon(<FolderOutlined />);
+                setIcon(<FolderOutlined/>);
                 break;
             case CardType.FILE:
-                setIcon(<FileOutlined />);
+                setIcon(<FileOutlined/>);
                 break;
         }
     }, [card]);
-    return <Card variant='borderless' style={{width: '250px', margin: '0.5em', backgroundColor: color(card.type)}} onClick={() => handleClick(card)}>
+    return <Card
+        variant='borderless'
+        style={{width: '250px', margin: '0.5em', backgroundColor: color(card.type)}}
+        onClick={() => handleClick(card)}
+        title={<>
+            <div>{icon}&nbsp;{card.title}</div>
+        </>}>
         <>
-            {icon}&nbsp;<span>{ card.title }</span>
+            <span>{card.type !== CardType.SYSTEM ? formatFileSize(card.size) : ''}</span>
         </>
     </Card>
 }
@@ -42,6 +50,9 @@ export type CardData = {
     position: number;
     type: CardType;
     size?: number; // em bytes
+    timestamp?: number;
+    url?: string;
+    downloadUrl?: string;
 }
 
 export enum CardType {

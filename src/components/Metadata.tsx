@@ -41,6 +41,14 @@ export function MetaProvider({children}: any) {
         });
     }
 
+    function recalculateFolderSizes(currFolderId: string | null, incSize: number) {
+        if (incSize === 0 || !currFolderId || currFolderId === '') return;
+        const currFolder = items.find(i => i.id === currFolderId);
+        if (!currFolder) return;
+        currFolder.size = (currFolder.size || 0) + incSize;
+        recalculateFolderSizes(currFolder.parentId, incSize);
+    }
+
     function addItem(item: CardData) {
         const curItems = viewItems();
         // apenas nome único
@@ -51,7 +59,15 @@ export function MetaProvider({children}: any) {
         item.parentId = parent;
         item.id = nanoid(10);
         item.position = nextPosition;
+
+        // novo tamanho de pasta
+        if (item.type === CardType.FILE) {
+            recalculateFolderSizes(item.parentId, item.size || 0);
+        }
+
+        // atualiza metadados
         setItems(prev => [...prev, item]);
+
         return item;
     }
 
