@@ -12,6 +12,7 @@ export const MetaContext = createContext<MetaData>({
     removeItem: () => ({id: '', parentId: null, title: '', position: 0, type: CardType.SYSTEM}),
     changeFolder: () => ({id: '', parentId: null, title: '', position: 0, type: CardType.FOLDER}),
     changeOrder: () => ({}),
+    search: () => ({}),
 });
 
 const upCard: CardData = {
@@ -84,6 +85,18 @@ export function MetaProvider({children}: any) {
         }
     }
 
+    function search(input: string) {
+        const obj = items.find(i => i.title.toLowerCase().includes(input.toLowerCase()) && i.type !== CardType.SYSTEM);
+        if (!obj) return;
+        if (obj.type === CardType.FOLDER) {
+            changeFolder(obj);
+        } else {
+            // nesse caso, abrimos a pasta-mãe
+            const folder = items.find(i => i.id === obj.parentId);
+            if (folder) changeFolder(folder);
+        }
+    }
+
     function changeOrder(newPosition: number, selected: CardData | null) {
         if (!selected) return;
         const curItems = viewItems();
@@ -102,7 +115,7 @@ export function MetaProvider({children}: any) {
     }
 
     return (
-        <MetaContext.Provider value={{items, parent, viewItems, changeFolder, addItem, changeOrder, removeItem}}>
+        <MetaContext.Provider value={{items, parent, viewItems, changeFolder, addItem, changeOrder, removeItem, search}}>
             {children}
         </MetaContext.Provider>
     );
@@ -116,4 +129,5 @@ export type MetaData = {
     changeFolder: (selected: CardData) => void;
     removeItem: (selected: CardData) => void;
     changeOrder: (newPosition: number, selected: CardData | null) => void;
+    search: (input: string) => void;
 }

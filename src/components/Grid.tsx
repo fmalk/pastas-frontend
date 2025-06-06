@@ -1,11 +1,12 @@
 'use client'
 import React, {useContext, useEffect, useState} from "react";
-import {Breadcrumb, Button, Divider, Flex, Modal} from 'antd';
+import {Breadcrumb, Button, Divider, Flex, Input} from 'antd';
 import {CardData, CardType, GenericCard} from "@/components/GenericCard";
 import {PathContext} from "@/components/Path";
 import {ModalContext} from "@/components/Modal";
 import {MetaContext} from "@/components/Metadata";
 import {FileAddOutlined, FolderAddOutlined} from "@ant-design/icons";
+const { Search } = Input;
 
 const boxStyle: React.CSSProperties = {
     width: '100%',
@@ -17,7 +18,7 @@ const boxStyle: React.CSSProperties = {
 export default function Grid() {
     const {path} = useContext(PathContext)
     const {newFolder, newFile, showFile } = useContext(ModalContext);
-    const {items, parent, viewItems, changeFolder} = useContext(MetaContext);
+    const {items, parent, viewItems, changeFolder, search} = useContext(MetaContext);
     const [show, setShow] = useState<CardData[]>([]);
 
     function handleClick(card: CardData) {
@@ -38,7 +39,8 @@ export default function Grid() {
         <Flex gap="middle" align="start" vertical style={boxStyle}>
             <Flex>
                 <Button onClick={newFolder}><FolderAddOutlined/>Nova Pasta</Button>&nbsp;
-                <Button onClick={newFile}><FileAddOutlined/>Novo Arquivo</Button>
+                <Button onClick={newFile}><FileAddOutlined/>Novo Arquivo</Button>&nbsp;
+                <Search placeholder="Busque por nome" onSearch={search} enterButton />
             </Flex>
             <Flex justify={'flex-start'} align={'flex-start'}>
                 {show.map(c => <GenericCard key={c.id} card={c} handleClick={handleClick}/>)}

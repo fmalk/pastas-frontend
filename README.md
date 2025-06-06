@@ -6,7 +6,6 @@ Demonstração de funcionalidades e técnicas.
 
 - Pode ordenar arquivos mas não via drag n' drop
 - Nenhum nome repetido, independente do lugar
-- Sem busca até o momento
 - Não apaga pastas, apenas arquivos
 - Sessões não se mantêm, para que Usuários testers diferentes vejam diferentes pastas
 - Bug: barra de progresso pode ficar travada, por pequena incompatibilidade de libs
@@ -34,7 +33,7 @@ Você pode rodar localmente usando `npm run dev`.
 ## Estrutura
 
 - Layout/Page: ínicio, abriga os componentes Providers para disponibilização de métodos
-- Grid: monta o caminho, botões "Novo X" e o painel de Cards
+- Grid: monta o caminho, botões "Novo X", Pesquisa e o painel de Cards
   - Path: exibe o caminho atual
   - Modal: exibe as modais de inputs para criação de novos itens e exibição de arquivos
   - Cards:
