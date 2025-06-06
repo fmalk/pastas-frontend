@@ -1,15 +1,17 @@
 'use client'
 import {createContext, useContext, useState} from "react";
 import {CardData, CardType} from "@/components/GenericCard";
-import { nanoid } from 'nanoid';
+import {nanoid} from 'nanoid';
 import {PathContext} from "@/components/Path";
 
 export const MetaContext = createContext<MetaData>({
     items: [],
     parent: null,
     viewItems: () => [],
-    addItem: () => ({id:'', parentId: null, title: '', position: 0, type: CardType.SYSTEM }),
-    changeFolder: () => ({id:'', parentId: null, title: '', position: 0, type: CardType.FOLDER }),
+    addItem: () => ({id: '', parentId: null, title: '', position: 0, type: CardType.SYSTEM}),
+    removeItem: () => ({id: '', parentId: null, title: '', position: 0, type: CardType.SYSTEM}),
+    changeFolder: () => ({id: '', parentId: null, title: '', position: 0, type: CardType.FOLDER}),
+    changeOrder: () => ({}),
 });
 
 const upCard: CardData = {
@@ -17,7 +19,7 @@ const upCard: CardData = {
 }
 
 export function MetaProvider({children}: any) {
-    const { up, down } = useContext(PathContext)
+    const {up, down} = useContext(PathContext)
     const [items, setItems] = useState<CardData[]>([]);
     const [parent, setParent] = useState<string | null>(null);
 
@@ -35,7 +37,7 @@ export function MetaProvider({children}: any) {
             if (a.type === CardType.FOLDER && b.type === CardType.FILE) return -1;
             if (b.type === CardType.FOLDER && a.type === CardType.FILE) return 1;
             if (a.type === CardType.FOLDER && b.type === CardType.FOLDER) return a.title.localeCompare(b.title);
-            return a.position-b.position;
+            return a.position - b.position;
         });
     }
 
@@ -45,7 +47,7 @@ export function MetaProvider({children}: any) {
         const sameName = items.find(i => i.title === item.title);
         if (sameName) return null;
 
-        const nextPosition = curItems.reduce((p,c) => Math.max(p, c.position), 0) + 1;
+        const nextPosition = curItems.reduce((p, c) => Math.max(p, c.position), 0) + 1;
         item.parentId = parent;
         item.id = nanoid(10);
         item.position = nextPosition;
@@ -66,8 +68,25 @@ export function MetaProvider({children}: any) {
         }
     }
 
+    function changeOrder(newPosition: number, selected: CardData | null) {
+        if (!selected) return;
+        const curItems = viewItems();
+        curItems.forEach((item) => {
+            if (item.position >= newPosition && item.id !== selected.id) {
+                item.position++;
+            }
+        })
+        selected.position = newPosition;
+        setItems(prev => [...prev]); // necessário update
+    }
+
+    function removeItem(item: CardData) {
+        const after = items.filter(i => i.id !== item.id);
+        setItems(after);
+    }
+
     return (
-        <MetaContext.Provider value={{ items, parent, viewItems, changeFolder, addItem }}>
+        <MetaContext.Provider value={{items, parent, viewItems, changeFolder, addItem, changeOrder, removeItem}}>
             {children}
         </MetaContext.Provider>
     );
@@ -79,4 +98,6 @@ export type MetaData = {
     viewItems: () => CardData[];
     addItem: (item: CardData) => CardData | null;
     changeFolder: (selected: CardData) => void;
+    removeItem: (selected: CardData) => void;
+    changeOrder: (newPosition: number, selected: CardData | null) => void;
 }

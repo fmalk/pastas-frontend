@@ -1,6 +1,6 @@
 'use client'
 import {createContext, useContext, useState} from "react";
-import {Input, Modal, Upload, UploadProps} from "antd";
+import {Input, InputNumber, Modal, Upload, UploadProps} from "antd";
 import {MetaContext} from "@/components/Metadata";
 import {CardData, CardType} from "@/components/GenericCard";
 import {InboxOutlined} from "@ant-design/icons";
@@ -10,8 +10,6 @@ const { Dragger } = Upload;
 export const ModalContext = createContext<ModalData>({
     newFolder: () => ({}),
     newFile: () => ({}),
-    deleteFolder: () => ({}),
-    deleteFile: () => ({}),
     showFile: (card: CardData) => ({}),
 });
 
@@ -29,7 +27,7 @@ export function ModalProvider({children}: any) {
     const [modalNewFolderOpen, setModalNewFolderOpen] = useState(false);
     const [modalNewFileOpen, setModalNewFileOpen] = useState(false);
     const [modalFileOpen, setModalFileOpen] = useState(false);
-    const { addItem } = useContext(MetaContext);
+    const { addItem, changeOrder, removeItem } = useContext(MetaContext);
     const [ error, setError ] = useState('');
     const [title, setTitle] = useState<string>('');
     const [fileCard, setFileCard] = useState<CardData | null>(null);
@@ -94,12 +92,9 @@ export function ModalProvider({children}: any) {
         setModalNewFileOpen(true);
     }
 
-    function deleteFolder() {
-        setModalNewFolderOpen(true);
-    }
-
-    function deleteFile() {
-        setModalNewFolderOpen(true);
+    function deleteFile(card: CardData | null) {
+        if (card) removeItem(card);
+        handleCancel();
     }
 
     function showFile(card: CardData) {
@@ -107,8 +102,19 @@ export function ModalProvider({children}: any) {
         setModalFileOpen(true)
     }
 
+    // Esta foi gerada por Cursor IA ("Line 131 show the size in bytes, can you give me a function that would parse this number and show a kB, mB version?")
+    function formatFileSize(bytes: number | undefined): string {
+        if (bytes === 0 || !bytes) return '0 Bytes';
+
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
     return (
-        <ModalContext.Provider value={{ newFolder, newFile, deleteFolder, deleteFile, showFile }}>
+        <ModalContext.Provider value={{ newFolder, newFile, showFile }}>
             {children}
             <Modal
                 centered
@@ -125,11 +131,12 @@ export function ModalProvider({children}: any) {
                 title="Arquivo"
                 open={modalFileOpen}
                 onOk={handleCancel}
-                onCancel={handleCancel}
+                onCancel={() => deleteFile(fileCard)}
+                cancelText={'Apagar'}
             >
                 <p>Nome: <strong>{fileCard?.title}</strong></p>
-                <p>Tamanho: {fileCard?.size}</p>
-                <p>Ordem: {fileCard?.position}</p>
+                <p>Tamanho: {formatFileSize(fileCard?.size)}</p>
+                <div>Ordem: <InputNumber min={0} defaultValue={fileCard?.position} onChange={(value) => value || value === 0 ? changeOrder(value, fileCard) : false } changeOnWheel /></div>
             </Modal>
             <Modal
                 centered
@@ -156,7 +163,5 @@ export function ModalProvider({children}: any) {
 export type ModalData = {
     newFolder: () => void;
     newFile: () => void;
-    deleteFolder: () => void;
-    deleteFile: () => void;
     showFile: (card: CardData) => void;
 }
